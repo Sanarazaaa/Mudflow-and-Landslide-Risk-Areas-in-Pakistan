@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mudflow and Landslide Risk Areas in Pakistan</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, sans-serif;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Mudflow and Landslide Risk Areas in Pakistan</h1>
+<div id="map"></div>
+
+<div class="info" id="infoPanel">
+    <h4>Area Information</h4>
+    <p id="areaDetails">Select an area to see details.</p>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([30.3753, 69.3451], 5); // Centered on Pakistan
+
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // Sample GeoJSON data for risk areas in Pakistan
+    var riskAreas = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "High Risk Area 1",
+                    "alert": "High Risk",
+                    "description": "This area is under high risk for mudflows due to steep slopes and heavy rainfall."
+                },
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [70.0, 30.5],
+                            [70.5, 30.5],
+                            [70.5, 30.0],
+                            [70.0, 30.0],
+                            [70.0, 30.5]
+                        ]
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Moderate Risk Area 1",
+                    "alert": "Moderate Risk",
+                    "description": "This area has a moderate risk of landslides, especially during the monsoon season."
+                },
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [73.0, 33.5],
+                            [73.5, 33.5],
+                            [73.5, 33.0],
+                            [73.0, 33.0],
+                            [73.0, 33.5]
+                        ]
+                    ]
+                }
+            }
+        ]
+    };
+
+    // Function to style the GeoJSON layer
+    function style(feature) {
+        return {
+            color: feature.properties.alert === 'High Risk' ? "red" : "orange",
+            weight: 2,
+            fillColor: feature.properties.alert === 'High Risk' ? "red" : "orange",
+            fillOpacity: 0.5
+        };
+    }
+
+    // Create GeoJSON layer
+    L.geoJSON(riskAreas, {
+        style: style,
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(feature.properties.name);
+            layer.on('click', function () {
+                document.getElementById('areaDetails').innerText = feature.properties.description;
+            });
+        }
+    }).addTo(map);
+</script>
+
+</body>
+</html>
